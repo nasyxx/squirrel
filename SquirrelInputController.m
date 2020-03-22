@@ -297,8 +297,15 @@
   if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
     return;
   // force committing existing Rime composition
+  BOOL o = rime_get_api()->get_option(_session, "ascii_mode");
+  if(!o){
+    rime_get_api()->set_option(_session, "ascii_mode", True);
+  }
   if (_session && rime_get_api()->commit_composition(_session)) {
     [self rimeConsumeCommittedText];
+  }
+  if(!o){
+    rime_get_api()->set_option(_session, "ascii_mode", False);
   }
 }
 
@@ -450,7 +457,7 @@
 
 -(void)destroySession
 {
-  //NSLog(@"destroySession:");
+  NSLog(@"destroySession:");
   if (_session) {
     rime_get_api()->destroy_session(_session);
     _session = 0;
